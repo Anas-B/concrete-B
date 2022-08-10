@@ -42,3 +42,6 @@ rustdoc-args = ["--html-in-header", "katex-header.html"]
 name = "bench"
 harness = false
 required-features = ['internal-keycache']
+
+[profile.bench]
+debug = true

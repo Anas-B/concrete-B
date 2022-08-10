@@ -30,33 +30,39 @@ macro_rules! create_parametrized_test{
             PARAM_MESSAGE_1_CARRY_7,
             PARAM_MESSAGE_2_CARRY_1,
             PARAM_MESSAGE_2_CARRY_2,
-            PARAM_MESSAGE_2_CARRY_3,
-            PARAM_MESSAGE_2_CARRY_4,
-            PARAM_MESSAGE_2_CARRY_5,
-            PARAM_MESSAGE_2_CARRY_6,
-            PARAM_MESSAGE_3_CARRY_1,
-            PARAM_MESSAGE_3_CARRY_2,
-            PARAM_MESSAGE_3_CARRY_3,
-            PARAM_MESSAGE_3_CARRY_4,
-            PARAM_MESSAGE_3_CARRY_5,
-            PARAM_MESSAGE_4_CARRY_1,
-            PARAM_MESSAGE_4_CARRY_2,
-            PARAM_MESSAGE_4_CARRY_3,
-            PARAM_MESSAGE_4_CARRY_4,
-            PARAM_MESSAGE_5_CARRY_1,
-            PARAM_MESSAGE_5_CARRY_2,
-            PARAM_MESSAGE_5_CARRY_3,
-            PARAM_MESSAGE_6_CARRY_1,
-            PARAM_MESSAGE_6_CARRY_2,
-            PARAM_MESSAGE_7_CARRY_1
+            // PARAM_MESSAGE_2_CARRY_3,
+            // PARAM_MESSAGE_2_CARRY_4,
+            // PARAM_MESSAGE_2_CARRY_5,
+            // PARAM_MESSAGE_2_CARRY_6,
+            // PARAM_MESSAGE_3_CARRY_1,
+            // PARAM_MESSAGE_3_CARRY_2,
+            PARAM_MESSAGE_3_CARRY_3
+            // PARAM_MESSAGE_3_CARRY_4,
+            // PARAM_MESSAGE_3_CARRY_5,
+            // PARAM_MESSAGE_4_CARRY_1,
+            // PARAM_MESSAGE_4_CARRY_2,
+            // PARAM_MESSAGE_4_CARRY_3,
+            // PARAM_MESSAGE_4_CARRY_4,
+            // PARAM_MESSAGE_5_CARRY_1,
+            // PARAM_MESSAGE_5_CARRY_2,
+            // PARAM_MESSAGE_5_CARRY_3,
+            // PARAM_MESSAGE_6_CARRY_1,
+            // PARAM_MESSAGE_6_CARRY_2,
+            // PARAM_MESSAGE_7_CARRY_1
         });
     };
 }
 
-create_parametrized_test!(shortint_mul_treepbs);
+// create_parametrized_test!(shortint_mul_lsb_treepbs);
+// create_parametrized_test!(shortint_mul_msb_treepbs);
+create_parametrized_test!(shortint_mul_lsb_treepbs_base);
+create_parametrized_test!(shortint_mul_msb_treepbs_base);
 create_parametrized_test!(shortint_message_and_carry_extract);
+create_parametrized_test!(shortint_mul_lsb_treepbs_with_multivalue);
+create_parametrized_test!(shortint_mul_msb_treepbs_with_multivalue);
 
-fn shortint_mul_treepbs(param: Parameters) {
+
+fn shortint_mul_lsb_treepbs_with_multivalue(param: Parameters) {
     let (cks, sks) = KEY_CACHE.get_from_param(param);
     let mut treepbs_key = TreepbsKey::new_tree_key(&cks);
 
@@ -64,7 +70,6 @@ fn shortint_mul_treepbs(param: Parameters) {
     let mut rng = rand::thread_rng();
 
     let base = cks.parameters.message_modulus.0 as u64;
-    let modulus = (sks.message_modulus.0 * sks.carry_modulus.0) as u64;
 
     for _ in 0..NB_TEST {
         let clear_0 = rng.gen::<u64>() % base;
@@ -78,13 +83,106 @@ fn shortint_mul_treepbs(param: Parameters) {
         let ctxt_one = cks.encrypt(clear_1);
 
         // multiply together the two ciphertexts
-        let ct_res = treepbs_key.mul_treepbs_with_multivalue(&sks, &ctxt_zero, &ctxt_one);
+        let ct_res = treepbs_key.mul_lsb_treepbs_with_multivalue(&sks, &ctxt_zero, &ctxt_one);
 
         // decryption of ct_res
         let dec_res = cks.decrypt_message_and_carry(&ct_res);
 
         // assert
-        assert_eq!((clear_0 * clear_1) % modulus, dec_res);
+        assert_eq!((clear_0 * clear_1) % base, dec_res);
+    }
+}
+
+fn shortint_mul_msb_treepbs_with_multivalue(param: Parameters) {
+    let (cks, sks) = KEY_CACHE.get_from_param(param);
+    let mut treepbs_key = TreepbsKey::new_tree_key(&cks);
+
+    //RNG
+    let mut rng = rand::thread_rng();
+
+    let base = cks.parameters.message_modulus.0 as u64;
+
+    for _ in 0..NB_TEST {
+        let clear_0 = rng.gen::<u64>() % base;
+
+        let clear_1 = rng.gen::<u64>() % base;
+
+        // encryption of an integer
+        let ctxt_zero = cks.encrypt(clear_0);
+
+        // encryption of an integer
+        let ctxt_one = cks.encrypt(clear_1);
+
+        // multiply together the two ciphertexts
+        let ct_res = treepbs_key.mul_msb_treepbs_with_multivalue(&sks, &ctxt_zero, &ctxt_one);
+
+        // decryption of ct_res
+        let dec_res = cks.decrypt_message_and_carry(&ct_res);
+
+        // assert
+        assert_eq!((clear_0 * clear_1)/ base, dec_res);
+    }
+}
+
+fn shortint_mul_lsb_treepbs_base(param: Parameters) {
+    let (cks, sks) = KEY_CACHE.get_from_param(param);
+    let mut treepbs_key = TreepbsKey::new_tree_key(&cks);
+
+    //RNG
+    let mut rng = rand::thread_rng();
+
+    let base = cks.parameters.message_modulus.0 as u64;
+
+    for _ in 0..NB_TEST {
+        let clear_0 = rng.gen::<u64>() % base;
+
+        let clear_1 = rng.gen::<u64>() % base;
+
+        // encryption of an integer
+        let ctxt_zero = cks.encrypt(clear_0);
+
+        // encryption of an integer
+        let ctxt_one = cks.encrypt(clear_1);
+
+        // multiply together the two ciphertexts
+        let ct_res = treepbs_key.mul_lsb_treepbs_with_multivalue_base(&sks, &ctxt_zero, &ctxt_one);
+
+        // decryption of ct_res
+        let dec_res = cks.decrypt_message_and_carry(&ct_res);
+
+        // assert
+        assert_eq!((clear_0 * clear_1) % base, dec_res);
+    }
+}
+
+fn shortint_mul_msb_treepbs_base(param: Parameters) {
+    let (cks, sks) = KEY_CACHE.get_from_param(param);
+    let mut treepbs_key = TreepbsKey::new_tree_key(&cks);
+
+    //RNG
+    let mut rng = rand::thread_rng();
+
+    let base = cks.parameters.message_modulus.0 as u64;
+
+    for _ in 0..NB_TEST {
+        let clear_0 = rng.gen::<u64>() % base;
+
+        let clear_1 = rng.gen::<u64>() % base;
+
+        // encryption of an integer
+        let ctxt_zero = cks.encrypt(clear_0);
+
+        // encryption of an integer
+        let ctxt_one = cks.encrypt(clear_1);
+
+        // multiply together the two ciphertexts
+        let ct_res = treepbs_key.mul_msb_treepbs_with_multivalue_base(&sks, &ctxt_zero, &ctxt_one);
+
+        // decryption of ct_res
+        let dec_res = cks.decrypt_message_and_carry(&ct_res);
+
+        // assert
+        assert_eq!(((clear_0 * clear_1)/ base) % base, dec_res);
     }
 }
 

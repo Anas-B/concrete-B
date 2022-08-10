@@ -23,20 +23,20 @@ impl TreepbsKey {
     }
 
     pub fn mul_lsb_treepbs(
-        &mut self,
+        &self,
         sks: &ServerKey,
         ct_left: &Ciphertext,
         ct_right: &Ciphertext,
     ) -> Ciphertext {
         ShortintEngine::with_thread_local_mut(|engine| {
             engine
-                .mul_lsb_treepbs(self, sks, ct_left, ct_right)
+                .mul_lsb_treepbs_with_multivalue(self, sks, ct_left, ct_right)
                 .unwrap()
         })
     }
 
     pub fn bivaluepbs<F1, F2>(
-        &mut self,
+        &self,
         sks: &ServerKey,
         ct_in: &Ciphertext,
         f_1: F1,
@@ -51,21 +51,60 @@ impl TreepbsKey {
         })
     }
 
-    pub fn mul_treepbs_with_multivalue(
-        &mut self,
+    pub fn mul_lsb_treepbs_with_multivalue(
+        &self,
         sks: &ServerKey,
         ct_left: &Ciphertext,
         ct_right: &Ciphertext,
     ) -> Ciphertext {
         ShortintEngine::with_thread_local_mut(|engine| {
             engine
-                .mul_treepbs_with_multivalue(self, sks, ct_left, ct_right)
+                .mul_lsb_treepbs_with_multivalue(self, sks, ct_left, ct_right)
+                .unwrap()
+        })
+    }
+
+    pub fn mul_msb_treepbs_with_multivalue(
+        &self,
+        sks: &ServerKey,
+        ct_left: &Ciphertext,
+        ct_right: &Ciphertext,
+    ) -> Ciphertext {
+        ShortintEngine::with_thread_local_mut(|engine| {
+            engine
+                .mul_msb_treepbs_with_multivalue(self, sks, ct_left, ct_right)
+                .unwrap()
+        })
+    }
+
+    pub fn mul_lsb_treepbs_with_multivalue_base(
+        &self,
+        sks: &ServerKey,
+        ct_left: &Ciphertext,
+        ct_right: &Ciphertext,
+    ) -> Ciphertext {
+        ShortintEngine::with_thread_local_mut(|engine| {
+            engine
+                .mul_lsb_treepbs_with_multivalue_base(self, sks, ct_left, ct_right)
+                .unwrap()
+        })
+    }
+
+    pub fn mul_msb_treepbs_with_multivalue_base(
+        &self,
+        sks: &ServerKey,
+        ct_left: &Ciphertext,
+        ct_right: &Ciphertext,
+    ) -> Ciphertext {
+        ShortintEngine::with_thread_local_mut(|engine| {
+            engine
+                .mul_msb_treepbs_with_multivalue_base(self, sks, ct_left, ct_right)
                 .unwrap()
         })
     }
 
     pub fn message_and_carry_extract(
-        &mut self,
+        &self,
         sks: &ServerKey,
         ct_in: &Ciphertext,
     ) -> Vec<Ciphertext> {

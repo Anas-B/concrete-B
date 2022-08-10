@@ -11,3 +11,4 @@ members = [
 
 [profile.bench]
 lto = "fat"
+debug = true
