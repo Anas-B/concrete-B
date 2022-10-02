@@ -15,32 +15,32 @@ use rand::Rng;
 
 criterion_group!(
     to_be_reworked,
-    smart_block_mul,
-    radmodint_unchecked_mul,
-    radmodint_unchecked_mul_many_sizes,
-    crt_unchecked_mul_many_sizes,
-    crt,
+    // smart_block_mul,
+    // radmodint_unchecked_mul,
+    // radmodint_unchecked_mul_many_sizes,
+    // crt_unchecked_mul_many_sizes,
+    // crt,
     two_block_pbs,
-    two_block_pbs,
-    two_block_pbs_base,
+    // two_block_pbs,
+    // two_block_pbs_base,
     three_block_pbs,
-    three_block_pbs_base,
+    // three_block_pbs_base,
     // radmodint_wopbs,
     // radmodint_wopbs_32_bits,
     // radmodint_wopbs_16bits_param_2_2_8_blocks,
     // radmodint_wopbs_16bits_param_4_4_4_blocks,
-    concrete_integer_unchecked_mul_crt_16_bits,
-    concrete_integer_unchecked_add_crt_16_bits,
-    concrete_integer_unchecked_clean_carry_crt_16_bits,
-    concrete_integer_unchecked_mul_crt_32_bits,
-    concrete_integer_unchecked_add_crt_32_bits,
-    concrete_integer_unchecked_clean_carry_crt_32_bits,
+    // concrete_integer_unchecked_mul_crt_16_bits,
+    // concrete_integer_unchecked_add_crt_16_bits,
+    // concrete_integer_unchecked_clean_carry_crt_16_bits,
+    // concrete_integer_unchecked_mul_crt_32_bits,
+    // concrete_integer_unchecked_add_crt_32_bits,
+    // concrete_integer_unchecked_clean_carry_crt_32_bits,
 );
 
 #[allow(unused_imports)]
 use concrete_shortint::parameters::{
     PARAM_MESSAGE_1_CARRY_1, PARAM_MESSAGE_2_CARRY_2, PARAM_MESSAGE_3_CARRY_3,
-    PARAM_MESSAGE_4_CARRY_4,
+    // PARAM_MESSAGE_4_CARRY_4,
 };
 
 macro_rules! named_param {
@@ -268,11 +268,11 @@ criterion_group!(
 criterion_group!(misc, full_propagate,);
 
 criterion_main!(
-    smart_arithmetic_operation,
-    smart_scalar_arithmetic_operation,
-    unchecked_arithmetic_operation,
-    unchecked_scalar_arithmetic_operation,
-    misc,
+    // smart_arithmetic_operation,
+    // smart_scalar_arithmetic_operation,
+    // unchecked_arithmetic_operation,
+    // unchecked_scalar_arithmetic_operation,
+    // misc,
     to_be_reworked,
 );
 
@@ -347,7 +347,7 @@ fn radmodint_unchecked_mul(c: &mut Criterion) {
     let param = DEFAULT_PARAMETERS;
     let (cks, sks) = KEY_CACHE.get_from_params(param, VecLength(size));
 
-    println!("Chosen Parameter Set: {:?}", param);
+    //println!("Chosen Parameter Set: {:?}", param);
 
     //RNG
     let mut rng = rand::thread_rng();
@@ -382,7 +382,7 @@ fn radmodint_unchecked_mul_many_sizes(c: &mut Criterion) {
 
     for msg_space in [16] {
         let dec = radix_decomposition(msg_space, 2, max_message_space);
-        println!("radix decomposition = {:?}", dec);
+        //println!("radix decomposition = {:?}", dec);
         for rad_decomp in dec.iter() {
             //The carry space is at least equal to the msg_space
             let carry_space = rad_decomp.msg_space;
@@ -391,7 +391,7 @@ fn radmodint_unchecked_mul_many_sizes(c: &mut Criterion) {
                 get_parameters_from_message_and_carry(1 << rad_decomp.msg_space, 1 << carry_space);
             let (cks, sks) = KEY_CACHE.get_from_params(param, VecLength(rad_decomp.block_number));
 
-            println!("Chosen Parameter Set: {:?}", param);
+            //println!("Chosen Parameter Set: {:?}", param);
 
             //RNG
             let mut rng = rand::thread_rng();
@@ -405,14 +405,14 @@ fn radmodint_unchecked_mul_many_sizes(c: &mut Criterion) {
             let mut ctxt_1 = cks.encrypt(clear1);
             let ctxt_2 = cks.encrypt(clear2);
 
-            println!(
-                "(Input Size {}; Carry_Space {}, Message_Space {}, Block Number {}):  \
-                    Unchecked Mul\
-                     + \
-                    Full \
-                Propagate ",
-                msg_space, carry_space, rad_decomp.msg_space, rad_decomp.block_number,
-            );
+            //println!(
+            //     "(Input Size {}; Carry_Space {}, Message_Space {}, Block Number {}):  \
+            //         Unchecked Mul\
+            //          + \
+            //         Full \
+            //     Propagate ",
+            //     msg_space, carry_space, rad_decomp.msg_space, rad_decomp.block_number,
+            // );
             let id = format!(
                 "(Integer-Mul-Propagate-Message_{}_Carry_{}_Input_{}_Block_{}):",
                 rad_decomp.msg_space, carry_space, msg_space, rad_decomp.block_number,
@@ -438,7 +438,7 @@ fn radmodint_wopbs(c: &mut Criterion) {
 
     for msg_space in [16] {
         let dec = radix_decomposition(msg_space, 2, max_message_space);
-        println!("radix decomposition = {:?}", dec);
+        //println!("radix decomposition = {:?}", dec);
         //for rad_decomp in dec.iter() {
         let rad_decomp = dec[0];
         //The carry space is at least equal to the msg_space
@@ -451,7 +451,7 @@ fn radmodint_wopbs(c: &mut Criterion) {
         //let (mut cks, mut sks) = KEY_CACHE.get_from_params(param);
         let (cks, sks, wopbs_shortint) = KEY_CACHE_WOPBS.get_from_param(param);
 
-        println!("Chosen Parameter Set: {:?}", param);
+        //println!("Chosen Parameter Set: {:?}", param);
 
         let cks = concrete_integer::client_key::ClientKey::from_shortint(
             cks,
@@ -493,11 +493,11 @@ fn radmodint_wopbs(c: &mut Criterion) {
         }
         let big_lut = vec![lut_1, lut_2];
 
-        println!(
-            "(Input Size {}; Carry_Space {}, Message_Space {}, Block Number {}):  \
-                    WoPBS",
-            msg_space, carry_space, rad_decomp.msg_space, rad_decomp.block_number,
-        );
+        //println!(
+        //     "(Input Size {}; Carry_Space {}, Message_Space {}, Block Number {}):  \
+        //             WoPBS",
+        //     msg_space, carry_space, rad_decomp.msg_space, rad_decomp.block_number,
+        // );
         let id = format!(
             "(Integer-WoPBS-Message_{}_Carry_{}_Input_{}_Block_{}):",
             rad_decomp.msg_space, carry_space, msg_space, rad_decomp.block_number,
@@ -519,10 +519,10 @@ fn radmodint_wopbs_16bits_param_2_2_8_blocks(c: &mut Criterion) {
     let mut group = c.benchmark_group("smaller-sample-count");
     group.sample_size(10);
 
-    println!(
-        "Chosen Parameter Set: {:?}",
-        PARAM_MESSAGE_2_CARRY_2_16_BITS
-    );
+    // println!(
+    //     "Chosen Parameter Set: {:?}",
+    //     PARAM_MESSAGE_2_CARRY_2_16_BITS
+    // );
 
     let (cks, sks) = gen_keys(&param, nb_block);
     let wopbs_key = WopbsKeyV0::new_wopbs_key(&cks, &sks);
@@ -574,7 +574,7 @@ fn radmodint_wopbs_16bits_param_4_4_4_blocks(c: &mut Criterion) {
     let mut group = c.benchmark_group("smaller-sample-count");
     group.sample_size(10);
 
-    println!("Chosen Parameter Set: {:?}", param);
+    // //println!("Chosen Parameter Set: {:?}", param);
 
     let (cks, sks) = gen_keys(&param, nb_block);
     let wopbs_key = WopbsKeyV0::new_wopbs_key(&cks, &sks);
@@ -631,7 +631,7 @@ fn radmodint_wopbs_32_bits(c: &mut Criterion) {
     group.sample_size(10);
 
     for (param, nb_block) in vec_param.iter().zip(vec_nb_block.iter()) {
-        println!("Chosen Parameter Set: {:?}", param);
+        //println!("Chosen Parameter Set: {:?}", param);
 
         let (cks, sks) = gen_keys(param, *nb_block);
         let wopbs_key = WopbsKeyV0::new_wopbs_key(&cks, &sks);
@@ -684,7 +684,7 @@ fn concrete_integer_unchecked_mul_crt_16_bits(c: &mut Criterion) {
 
     let (cks, sks) = KEY_CACHE.get_from_params(param, VecLength(4));
 
-    println!("Chosen Parameter Set: {:?}", param);
+    //println!("Chosen Parameter Set: {:?}", param);
 
     let basis = vec![8, 9, 11, 13, 7];
     let mut modulus = 1;
@@ -721,7 +721,7 @@ fn concrete_integer_unchecked_add_crt_16_bits(c: &mut Criterion) {
 
     let (cks, sks) = KEY_CACHE.get_from_params(param, VecLength(4));
 
-    println!("Chosen Parameter Set: {:?}", param);
+    //println!("Chosen Parameter Set: {:?}", param);
 
     let basis = vec![8, 9, 11, 13, 7];
     let mut modulus = 1;
@@ -764,7 +764,7 @@ fn concrete_integer_unchecked_clean_carry_crt_16_bits(c: &mut Criterion) {
 
     let (cks, sks) = KEY_CACHE.get_from_params(param, VecLength(4));
 
-    println!("Chosen Parameter Set: {:?}", param);
+    //println!("Chosen Parameter Set: {:?}", param);
 
     let basis = vec![8, 9, 11, 13, 7];
     let mut modulus = 1;
@@ -805,7 +805,7 @@ fn concrete_integer_unchecked_mul_crt_32_bits(c: &mut Criterion) {
 
     let (cks, sks) = KEY_CACHE.get_from_params(param, VecLength(8));
 
-    println!("Chosen Parameter Set: {:?}", param);
+    //println!("Chosen Parameter Set: {:?}", param);
 
     let basis = vec![43, 47, 37, 49, 29, 41];
     let mut modulus = 1;
@@ -847,7 +847,7 @@ fn concrete_integer_unchecked_add_crt_32_bits(c: &mut Criterion) {
 
     let (cks, sks) = KEY_CACHE.get_from_params(param, VecLength(8));
 
-    println!("Chosen Parameter Set: {:?}", param);
+    //println!("Chosen Parameter Set: {:?}", param);
 
     let basis = vec![43, 47, 37, 49, 29, 41];
     let mut modulus = 1;
@@ -890,7 +890,7 @@ fn concrete_integer_unchecked_clean_carry_crt_32_bits(c: &mut Criterion) {
 
     let (cks, sks) = KEY_CACHE.get_from_params(param, VecLength(8));
 
-    println!("Chosen Parameter Set: {:?}", param);
+    //println!("Chosen Parameter Set: {:?}", param);
 
     let basis = vec![43, 47, 37, 49, 29, 41];
     let mut modulus = 1;
@@ -976,14 +976,14 @@ fn crt_unchecked_mul_many_sizes(c: &mut Criterion) {
     let mut ctxt_1 = cks.encrypt_crt_several_keys(&clear1, &basis, &vec_key_id);
     let mut ctxt_2 = cks.encrypt_crt_several_keys(&clear2, &basis, &vec_key_id);
 
-    println!(
-        "(Input Size {}; Carry_Space {:?}, Message_Space {:?},):  \
-                    Unchecked Mul\
-                     + \
-                    Full \
-                Propagate ",
-        msg_space, carry_basis, basis,
-    );
+    // println!(
+    //     "(Input Size {}; Carry_Space {:?}, Message_Space {:?},):  \
+    //                 Unchecked Mul\
+    //                  + \
+    //                 Full \
+    //             Propagate ",
+    //     msg_space, carry_basis, basis,
+    // );
     let id = format!(
         "(Mul_Propagate_In_{}_Carry_{:?}_Message_{:?}):",
         msg_space, carry_basis, basis,
@@ -1022,31 +1022,31 @@ fn two_block_pbs(c: &mut Criterion) {
     });
 }
 
-fn two_block_pbs_base(c: &mut Criterion) {
-    let size = 2;
-
-    let (cks, sks) = gen_keys(&DEFAULT_PARAMETERS, size);
-    let treepbs_key = TreepbsKey::new(&cks);
-
-    //RNG
-    let mut rng = rand::thread_rng();
-
-    // message_modulus^vec_length
-    let modulus = DEFAULT_PARAMETERS.message_modulus.0.pow(size as u32) as u64;
-
-    let clear_0 = rng.gen::<u64>() % modulus;
-
-    // encryption of an integer
-    let ctxt_0 = cks.encrypt(clear_0);
-
-    let f = |x: u64| x * x;
-
-    c.bench_function("Two block PBS base", |b| {
-        b.iter(|| {
-            treepbs_key.two_block_pbs_base(&sks, &ctxt_0, f);
-        })
-    });
-}
+// fn two_block_pbs_base(c: &mut Criterion) {
+//     let size = 2;
+//
+//     let (cks, sks) = gen_keys(&DEFAULT_PARAMETERS, size);
+//     let treepbs_key = TreepbsKey::new(&cks);
+//
+//     //RNG
+//     let mut rng = rand::thread_rng();
+//
+//     // message_modulus^vec_length
+//     let modulus = DEFAULT_PARAMETERS.message_modulus.0.pow(size as u32) as u64;
+//
+//     let clear_0 = rng.gen::<u64>() % modulus;
+//
+//     // encryption of an integer
+//     let ctxt_0 = cks.encrypt(clear_0);
+//
+//     let f = |x: u64| x * x;
+//
+//     c.bench_function("Two block PBS base", |b| {
+//         b.iter(|| {
+//             treepbs_key.two_block_pbs_base(&sks, &ctxt_0, f);
+//         })
+//     });
+// }
 
 fn three_block_pbs(c: &mut Criterion) {
     let size = 3;
@@ -1074,28 +1074,28 @@ fn three_block_pbs(c: &mut Criterion) {
     });
 }
 
-fn three_block_pbs_base(c: &mut Criterion) {
-    let size = 3;
-
-    let (cks, sks) = gen_keys(&DEFAULT_PARAMETERS, size);
-    let treepbs_key = TreepbsKey::new(&cks);
-
-    //RNG
-    let mut rng = rand::thread_rng();
-
-    // message_modulus^vec_length
-    let modulus = DEFAULT_PARAMETERS.message_modulus.0.pow(size as u32) as u64;
-
-    let clear_0 = rng.gen::<u64>() % modulus;
-
-    // encryption of an integer
-    let ctxt_0 = cks.encrypt(clear_0);
-
-    let f = |x: u64| x * x;
-
-    c.bench_function("Three block PBS base", |b| {
-        b.iter(|| {
-            treepbs_key.three_block_pbs_base(&sks, &ctxt_0, f);
-        })
-    });
-}
+// fn three_block_pbs_base(c: &mut Criterion) {
+//     let size = 3;
+//
+//     let (cks, sks) = gen_keys(&DEFAULT_PARAMETERS, size);
+//     let treepbs_key = TreepbsKey::new(&cks);
+//
+//     //RNG
+//     let mut rng = rand::thread_rng();
+//
+//     // message_modulus^vec_length
+//     let modulus = DEFAULT_PARAMETERS.message_modulus.0.pow(size as u32) as u64;
+//
+//     let clear_0 = rng.gen::<u64>() % modulus;
+//
+//     // encryption of an integer
+//     let ctxt_0 = cks.encrypt(clear_0);
+//
+//     let f = |x: u64| x * x;
+//
+//     c.bench_function("Three block PBS base", |b| {
+//         b.iter(|| {
+//             treepbs_key.three_block_pbs_base(&sks, &ctxt_0, f);
+//         })
+//     });
+// }

@@ -55,8 +55,6 @@ macro_rules! create_parametrized_test{
 
 // create_parametrized_test!(shortint_mul_lsb_treepbs);
 // create_parametrized_test!(shortint_mul_msb_treepbs);
-create_parametrized_test!(shortint_mul_lsb_treepbs_base);
-create_parametrized_test!(shortint_mul_msb_treepbs_base);
 create_parametrized_test!(shortint_message_and_carry_extract);
 create_parametrized_test!(shortint_mul_lsb_treepbs_with_multivalue);
 create_parametrized_test!(shortint_mul_msb_treepbs_with_multivalue);
@@ -121,68 +119,6 @@ fn shortint_mul_msb_treepbs_with_multivalue(param: Parameters) {
 
         // assert
         assert_eq!((clear_0 * clear_1)/ base, dec_res);
-    }
-}
-
-fn shortint_mul_lsb_treepbs_base(param: Parameters) {
-    let (cks, sks) = KEY_CACHE.get_from_param(param);
-    let mut treepbs_key = TreepbsKey::new_tree_key(&cks);
-
-    //RNG
-    let mut rng = rand::thread_rng();
-
-    let base = cks.parameters.message_modulus.0 as u64;
-
-    for _ in 0..NB_TEST {
-        let clear_0 = rng.gen::<u64>() % base;
-
-        let clear_1 = rng.gen::<u64>() % base;
-
-        // encryption of an integer
-        let ctxt_zero = cks.encrypt(clear_0);
-
-        // encryption of an integer
-        let ctxt_one = cks.encrypt(clear_1);
-
-        // multiply together the two ciphertexts
-        let ct_res = treepbs_key.mul_lsb_treepbs_with_multivalue_base(&sks, &ctxt_zero, &ctxt_one);
-
-        // decryption of ct_res
-        let dec_res = cks.decrypt_message_and_carry(&ct_res);
-
-        // assert
-        assert_eq!((clear_0 * clear_1) % base, dec_res);
-    }
-}
-
-fn shortint_mul_msb_treepbs_base(param: Parameters) {
-    let (cks, sks) = KEY_CACHE.get_from_param(param);
-    let mut treepbs_key = TreepbsKey::new_tree_key(&cks);
-
-    //RNG
-    let mut rng = rand::thread_rng();
-
-    let base = cks.parameters.message_modulus.0 as u64;
-
-    for _ in 0..NB_TEST {
-        let clear_0 = rng.gen::<u64>() % base;
-
-        let clear_1 = rng.gen::<u64>() % base;
-
-        // encryption of an integer
-        let ctxt_zero = cks.encrypt(clear_0);
-
-        // encryption of an integer
-        let ctxt_one = cks.encrypt(clear_1);
-
-        // multiply together the two ciphertexts
-        let ct_res = treepbs_key.mul_msb_treepbs_with_multivalue_base(&sks, &ctxt_zero, &ctxt_one);
-
-        // decryption of ct_res
-        let dec_res = cks.decrypt_message_and_carry(&ct_res);
-
-        // assert
-        assert_eq!(((clear_0 * clear_1)/ base) % base, dec_res);
     }
 }
 

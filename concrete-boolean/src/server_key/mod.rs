@@ -340,7 +340,7 @@ impl ServerKey {
                 // Compute the linear combination for second AND: - ct_condition + ct_else +
                 // (0,...,0,-1/8)
                 let mut ct_temp_2 = ct_condition_ct.clone(); // ct_condition
-                self.engine.fuse_neg_lwe_ciphertext(&mut ct_temp_2).unwrap(); // compute the negation
+                self.engine.fuse_opp_lwe_ciphertext(&mut ct_temp_2).unwrap(); // compute the negation
                 self.engine
                     .fuse_add_lwe_ciphertext(&mut ct_temp_2, &ct_else_ct)
                     .unwrap(); // + ct_else
@@ -436,7 +436,7 @@ impl ServerKey {
             Ciphertext::Encrypted(ct_ct) => {
                 // Compute the linear combination for NOT: -ct
                 let mut ct_res = ct_ct.clone();
-                self.engine.fuse_neg_lwe_ciphertext(&mut ct_res).unwrap(); // compute the negation
+                self.engine.fuse_opp_lwe_ciphertext(&mut ct_res).unwrap(); // compute the negation
 
                 // Output the result:
                 Ciphertext::Encrypted(ct_res)
@@ -543,7 +543,7 @@ impl BinaryBooleanGates<&Ciphertext, &Ciphertext> for ServerKey {
                     )
                     .unwrap(); // ct_left + ct_right
                 self.engine
-                    .fuse_neg_lwe_ciphertext(&mut self.buffer_lwe_before_pbs)
+                    .fuse_opp_lwe_ciphertext(&mut self.buffer_lwe_before_pbs)
                     .unwrap(); // compute the negation
                 let cst = self.engine.create_plaintext(&PLAINTEXT_TRUE).unwrap();
                 self.engine
@@ -599,7 +599,7 @@ impl BinaryBooleanGates<&Ciphertext, &Ciphertext> for ServerKey {
                     )
                     .unwrap(); // ct_left + ct_right
                 self.engine
-                    .fuse_neg_lwe_ciphertext(&mut self.buffer_lwe_before_pbs)
+                    .fuse_opp_lwe_ciphertext(&mut self.buffer_lwe_before_pbs)
                     .unwrap(); // compute the negation
                 let cst = self.engine.create_plaintext(&PLAINTEXT_FALSE).unwrap();
                 self.engine
@@ -771,7 +771,7 @@ impl BinaryBooleanGates<&Ciphertext, &Ciphertext> for ServerKey {
                     .fuse_add_lwe_ciphertext_plaintext(&mut self.buffer_lwe_before_pbs, &cst_add)
                     .unwrap(); // + 1/8
                 self.engine
-                    .fuse_neg_lwe_ciphertext(&mut self.buffer_lwe_before_pbs)
+                    .fuse_opp_lwe_ciphertext(&mut self.buffer_lwe_before_pbs)
                     .unwrap(); // compute the negation
                 let cst_mul = self.engine.create_cleartext(&2u32).unwrap();
                 self.engine

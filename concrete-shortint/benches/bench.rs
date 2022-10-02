@@ -131,35 +131,35 @@ fn programmable_bootstrapping(c: &mut Criterion) {
     bench_group.finish();
 }
 
-fn mul_lsb_treepbs_with_multivalue_base(c: &mut Criterion) {
-    let mut bench_group = c.benchmark_group("mul_lsb_treepbs_with_multivalue_base");
-
-    for (param_name, param) in SERVER_KEY_BENCH_PARAMS {
-        let (cks, sks) = KEY_CACHE.get_from_param(param);
-
-        let mut treepbs_key = TreepbsKey::new_tree_key(&cks);
-
-        let mut rng = rand::thread_rng();
-
-        let modulus = cks.parameters.message_modulus.0 as u64;
-
-        let clear_0 = rng.gen::<u64>() % modulus;
-        let clear_1 = rng.gen::<u64>() % modulus;
-
-        let ctxt_0 = cks.encrypt(clear_0);
-        let ctxt_1 = cks.encrypt(clear_1);
-
-        let id = format!("ServerKey::mul_lsb_treepbs_with_multivalue_base::{}", param_name);
-
-        bench_group.bench_function(&id, |b| {
-            b.iter(|| {
-                treepbs_key.mul_lsb_treepbs_with_multivalue_base(&sks, &ctxt_0, &ctxt_1);
-            })
-        });
-    }
-
-    bench_group.finish();
-}
+// fn mul_lsb_treepbs_with_multivalue_base(c: &mut Criterion) {
+//     let mut bench_group = c.benchmark_group("mul_lsb_treepbs_with_multivalue_base");
+//
+//     for (param_name, param) in SERVER_KEY_BENCH_PARAMS {
+//         let (cks, sks) = KEY_CACHE.get_from_param(param);
+//
+//         let mut treepbs_key = TreepbsKey::new_tree_key(&cks);
+//
+//         let mut rng = rand::thread_rng();
+//
+//         let modulus = cks.parameters.message_modulus.0 as u64;
+//
+//         let clear_0 = rng.gen::<u64>() % modulus;
+//         let clear_1 = rng.gen::<u64>() % modulus;
+//
+//         let ctxt_0 = cks.encrypt(clear_0);
+//         let ctxt_1 = cks.encrypt(clear_1);
+//
+//         let id = format!("ServerKey::mul_lsb_treepbs_with_multivalue_base::{}", param_name);
+//
+//         bench_group.bench_function(&id, |b| {
+//             b.iter(|| {
+//                 treepbs_key.mul_lsb_treepbs_with_multivalue_base(&sks, &ctxt_0, &ctxt_1);
+//             })
+//         });
+//     }
+//
+//     bench_group.finish();
+// }
 
 fn mul_lsb_treepbs_with_multivalue(c: &mut Criterion) {
     let mut bench_group = c.benchmark_group("mul_lsb_treepbs_with_multivalue");

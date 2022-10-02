@@ -77,32 +77,6 @@ impl TreepbsKey {
         })
     }
 
-    pub fn mul_lsb_treepbs_with_multivalue_base(
-        &self,
-        sks: &ServerKey,
-        ct_left: &Ciphertext,
-        ct_right: &Ciphertext,
-    ) -> Ciphertext {
-        ShortintEngine::with_thread_local_mut(|engine| {
-            engine
-                .mul_lsb_treepbs_with_multivalue_base(self, sks, ct_left, ct_right)
-                .unwrap()
-        })
-    }
-
-    pub fn mul_msb_treepbs_with_multivalue_base(
-        &self,
-        sks: &ServerKey,
-        ct_left: &Ciphertext,
-        ct_right: &Ciphertext,
-    ) -> Ciphertext {
-        ShortintEngine::with_thread_local_mut(|engine| {
-            engine
-                .mul_msb_treepbs_with_multivalue_base(self, sks, ct_left, ct_right)
-                .unwrap()
-        })
-    }
-
     pub fn message_and_carry_extract(
         &self,
         sks: &ServerKey,

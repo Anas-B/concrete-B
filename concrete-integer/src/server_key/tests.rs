@@ -61,9 +61,9 @@ create_parametrized_test!(integer_unchecked_mul_crt);
 create_parametrized_test!(integer_smart_block_mul);
 create_parametrized_test!(integer_smart_mul);
 create_parametrized_test!(integer_two_block_pbs);
-create_parametrized_test!(integer_two_block_pbs_base);
+// create_parametrized_test!(integer_two_block_pbs_base);
 create_parametrized_test!(integer_three_block_pbs);
-create_parametrized_test!(integer_three_block_pbs_base);
+// create_parametrized_test!(integer_three_block_pbs_base);
 create_parametrized_test!(integer_smart_add_crt);
 create_parametrized_test!(integer_unchecked_add_crt);
 create_parametrized_test!(integer_smart_mul_crt);
@@ -888,44 +888,6 @@ fn integer_two_block_pbs(param: Parameters) {
     }
 }
 
-fn integer_two_block_pbs_base(param: Parameters) {
-    let (cks, sks) = KEY_CACHE.get_from_params(param, VecLength(2));
-
-    //RNG
-    let mut rng = rand::thread_rng();
-
-    // message_modulus^vec_length
-    let modulus = param.message_modulus.0.pow(2) as u64;
-    // println!("modulus = {}", modulus);
-
-    let treepbs_key = TreepbsKey::new(&cks);
-
-    for _ in 0..NB_TEST {
-        let clear_0 = rng.gen::<u64>() % modulus;
-
-        // encryption of an integer
-        let ctxt_0 = cks.encrypt(clear_0);
-
-        let f = |x: u64| x * x;
-
-        // multiply together the two ciphertexts
-        let vec_res = treepbs_key.two_block_pbs_base(&sks, &ctxt_0, f);
-
-        // decryption
-        let res = cks.decrypt(&vec_res);
-
-        let clear = (clear_0 * clear_0) % modulus;
-        // println!(
-        //     "clear = {}, f(clear) = {}, res = {}",
-        //     clear_0,
-        //     f(clear_0) % modulus,
-        //     res
-        // );
-        // assert
-        assert_eq!(res, clear);
-    }
-}
-
 fn integer_three_block_pbs(param: Parameters) {
     let (cks, sks) = KEY_CACHE.get_from_params(param, VecLength(3));
 
@@ -948,44 +910,6 @@ fn integer_three_block_pbs(param: Parameters) {
 
         // multiply together the two ciphertexts
         let vec_res = treepbs_key.three_block_pbs(&sks, &ctxt_0, f);
-
-        // decryption
-        let res = cks.decrypt(&vec_res);
-
-        let clear = (clear_0 * clear_0) % modulus;
-        // println!(
-        //     "clear = {}, f(clear) = {}, res = {}",
-        //     clear_0,
-        //     f(clear_0) % modulus,
-        //     res
-        // );
-        // assert
-        assert_eq!(res, clear);
-    }
-}
-
-fn integer_three_block_pbs_base(param: Parameters) {
-    let (cks, sks) = KEY_CACHE.get_from_params(param, VecLength(3));
-
-    //RNG
-    let mut rng = rand::thread_rng();
-
-    // message_modulus^vec_length
-    let modulus = param.message_modulus.0.pow(3) as u64;
-    // println!("modulus = {}", modulus);
-
-    let treepbs_key = TreepbsKey::new(&cks);
-
-    for _ in 0..NB_TEST {
-        let clear_0 = rng.gen::<u64>() % modulus;
-
-        // encryption of an integer
-        let ctxt_0 = cks.encrypt(clear_0);
-
-        let f = |x: u64| x * x;
-
-        // multiply together the two ciphertexts
-        let vec_res = treepbs_key.three_block_pbs_base(&sks, &ctxt_0, f);
 
         // decryption
         let res = cks.decrypt(&vec_res);

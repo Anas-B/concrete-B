@@ -98,7 +98,7 @@ pub(crate) fn random_integer() -> u32 {
 
 /// generate a default core engine
 fn default_engine() -> CoreEngine {
-    CoreEngine::new().unwrap()
+    CoreEngine::new(()).unwrap()
 }
 
 /// Generate a couple of client and server keys with the default cryptographic parameters:

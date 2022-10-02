@@ -19,7 +19,8 @@ serde = { version = "1.0", features = ["derive"] }
 # and dev-deps to automatically enable them in tests
 concrete-utils = { path = "../concrete-utils", version = "0.1.0", optional = true }
 lazy_static = { version = "1.4.0", optional = true }
-concrete-core = { package = "concrete-core-experimental", version = "1.0.0-alpha", features = ["multithread", "serde_serialize"]}
+concrete-core = {path = "../../concrete-core-internal/concrete-core", features = ["multithread", "serde_serialize"]}
+#concrete-core = { package = "concrete-core-experimental", version = "1.0.0-alpha", features = ["multithread", "serde_serialize"]}
 
 [dev-dependencies]
 rand = "0.8.4"
