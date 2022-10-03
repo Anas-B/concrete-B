@@ -1022,32 +1022,6 @@ fn two_block_pbs(c: &mut Criterion) {
     });
 }
 
-// fn two_block_pbs_base(c: &mut Criterion) {
-//     let size = 2;
-//
-//     let (cks, sks) = gen_keys(&DEFAULT_PARAMETERS, size);
-//     let treepbs_key = TreepbsKey::new(&cks);
-//
-//     //RNG
-//     let mut rng = rand::thread_rng();
-//
-//     // message_modulus^vec_length
-//     let modulus = DEFAULT_PARAMETERS.message_modulus.0.pow(size as u32) as u64;
-//
-//     let clear_0 = rng.gen::<u64>() % modulus;
-//
-//     // encryption of an integer
-//     let ctxt_0 = cks.encrypt(clear_0);
-//
-//     let f = |x: u64| x * x;
-//
-//     c.bench_function("Two block PBS base", |b| {
-//         b.iter(|| {
-//             treepbs_key.two_block_pbs_base(&sks, &ctxt_0, f);
-//         })
-//     });
-// }
-
 fn three_block_pbs(c: &mut Criterion) {
     let size = 3;
 

@@ -255,22 +255,22 @@ impl TreepbsKey {
         let mut poly_acc_2 = Vec::with_capacity(modulus);
         generate_fourier_polynomial_two_variables(g_2, modulus, polynomial_size, &mut poly_acc_2);
 
-        //Create the polynomial to multiply the accumulator with
-        //=======================================================================
-        let mut poly_block_redundancy = vec![0_u64; sks.key.bootstrapping_key.polynomial_size().0];
-
-        // N/(p/2) = size of each block
-        let box_size = sks.key.bootstrapping_key.polynomial_size().0 / modulus;
-
-        let block_size = box_size * modulus;
-
-        for block in poly_block_redundancy.chunks_exact_mut(block_size) {
-            block[..box_size].fill(1);
-        }
-
-        // println!("poly_redundancy = {:?}", poly_block_redundancy);
-        let poly_redundancy = Polynomial::from_container(poly_block_redundancy);
-        //=======================================================================
+        // //Create the polynomial to multiply the accumulator with
+        // //=======================================================================
+        // let mut poly_block_redundancy = vec![0_u64; sks.key.bootstrapping_key.polynomial_size().0];
+        //
+        // // N/(p/2) = size of each block
+        // let box_size = sks.key.bootstrapping_key.polynomial_size().0 / modulus;
+        //
+        // let block_size = box_size * modulus;
+        //
+        // for block in poly_block_redundancy.chunks_exact_mut(block_size) {
+        //     block[..box_size].fill(1);
+        // }
+        //
+        // // println!("poly_redundancy = {:?}", poly_block_redundancy);
+        // let poly_redundancy = Polynomial::from_container(poly_block_redundancy);
+        // //=======================================================================
 
         sks.key.bootstrapping_key.0.treepbs_with_multivalue(
             &self.0.pksk.0,
@@ -390,21 +390,21 @@ impl TreepbsKey {
         let mut poly_acc_3 = Vec::with_capacity(modulus_2);
         generate_fourier_polynomial_three_variables(g_3, modulus, polynomial_size, &mut poly_acc_3);
 
-        //Create the polynomial to multiply the accumulator with
-        //=======================================================================
-        let mut poly_block_redundancy = vec![0_u64; sks.key.bootstrapping_key.polynomial_size().0];
-
-        // N/(p/2) = size of each block
-        let box_size = sks.key.bootstrapping_key.polynomial_size().0 / modulus;
-
-        let block_size = box_size * modulus;
-
-        for block in poly_block_redundancy.chunks_exact_mut(block_size) {
-            block[..box_size].fill(1);
-        }
-
-        let poly_redundancy = Polynomial::from_container(poly_block_redundancy);
-        //=======================================================================
+        // //Create the polynomial to multiply the accumulator with
+        // //=======================================================================
+        // let mut poly_block_redundancy = vec![0_u64; sks.key.bootstrapping_key.polynomial_size().0];
+        //
+        // // N/(p/2) = size of each block
+        // let box_size = sks.key.bootstrapping_key.polynomial_size().0 / modulus;
+        //
+        // let block_size = box_size * modulus;
+        //
+        // for block in poly_block_redundancy.chunks_exact_mut(block_size) {
+        //     block[..box_size].fill(1);
+        // }
+        //
+        // let poly_redundancy = Polynomial::from_container(poly_block_redundancy);
+        // //=======================================================================
 
         sks.key.bootstrapping_key.0.treepbs_with_multivalue(
             &self.0.pksk.0,

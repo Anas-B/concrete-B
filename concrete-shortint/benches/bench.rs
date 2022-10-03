@@ -19,92 +19,8 @@ const SERVER_KEY_BENCH_PARAMS: [(&str, Parameters); 3] = [
     // named_param!(PARAM_MESSAGE_4_CARRY_4),
 ];
 
-fn bench_server_key_binary_function<F>(c: &mut Criterion, bench_name: &str, binary_op: F)
-where
-    F: Fn(&ServerKey, &mut Ciphertext, &mut Ciphertext),
-{
-    let mut bench_group = c.benchmark_group(bench_name);
-
-    for (param_name, param) in SERVER_KEY_BENCH_PARAMS {
-        let (cks, sks) = KEY_CACHE.get_from_param(param);
-
-        let mut rng = rand::thread_rng();
-
-        let modulus = 1_u64 << cks.parameters.message_modulus.0;
-
-        let clear_0 = rng.gen::<u64>() % modulus;
-        let clear_1 = rng.gen::<u64>() % modulus;
-
-        let mut ct_0 = cks.encrypt(clear_0);
-        let mut ct_1 = cks.encrypt(clear_1);
-
-        let bench_id = format!("{}::{}", bench_name, param_name);
-        bench_group.bench_function(&bench_id, |b| {
-            b.iter(|| {
-                binary_op(&sks, &mut ct_0, &mut ct_1);
-            })
-        });
-    }
-
-    bench_group.finish()
-}
-
-fn bench_server_key_binary_scalar_function<F>(c: &mut Criterion, bench_name: &str, binary_op: F)
-where
-    F: Fn(&ServerKey, &mut Ciphertext, u8),
-{
-    let mut bench_group = c.benchmark_group(bench_name);
-
-    for (param_name, param) in SERVER_KEY_BENCH_PARAMS {
-        let (cks, sks) = KEY_CACHE.get_from_param(param);
-
-        let mut rng = rand::thread_rng();
-
-        let modulus = 1_u64 << cks.parameters.message_modulus.0;
-
-        let clear_0 = rng.gen::<u64>() % modulus;
-        let clear_1 = rng.gen::<u64>() % modulus;
-
-        let mut ct_0 = cks.encrypt(clear_0);
-
-        let bench_id = format!("{}::{}", bench_name, param_name);
-        bench_group.bench_function(&bench_id, |b| {
-            b.iter(|| {
-                binary_op(&sks, &mut ct_0, clear_1 as u8);
-            })
-        });
-    }
-
-    bench_group.finish()
-}
-
-fn carry_extract(c: &mut Criterion) {
-    let mut bench_group = c.benchmark_group("carry_extract");
-
-    for (param_name, param) in SERVER_KEY_BENCH_PARAMS {
-        let (cks, sks) = KEY_CACHE.get_from_param(param);
-
-        let mut rng = rand::thread_rng();
-
-        let modulus = 1_u64 << cks.parameters.message_modulus.0;
-
-        let clear_0 = rng.gen::<u64>() % modulus;
-
-        let ct_0 = cks.encrypt(clear_0);
-
-        let bench_id = format!("ServerKey::carry_extract::{}", param_name);
-        bench_group.bench_function(&bench_id, |b| {
-            b.iter(|| {
-                sks.carry_extract(&ct_0);
-            })
-        });
-    }
-
-    bench_group.finish()
-}
-
 fn programmable_bootstrapping(c: &mut Criterion) {
-    let mut bench_group = c.benchmark_group("programmable_bootstrap");
+    let mut bench_group = c.benchmark_group("programmable_bootstrapping");
 
     for (param_name, param) in SERVER_KEY_BENCH_PARAMS {
         let (cks, sks) = KEY_CACHE.get_from_param(param);
@@ -119,7 +35,7 @@ fn programmable_bootstrapping(c: &mut Criterion) {
 
         let ctxt = cks.encrypt(clear_0);
 
-        let id = format!("ServerKey::programmable_bootstrap::{}", param_name);
+        let id = format!("ServerKey::programmable_bootstrapping::{}", param_name);
 
         bench_group.bench_function(&id, |b| {
             b.iter(|| {
@@ -130,36 +46,6 @@ fn programmable_bootstrapping(c: &mut Criterion) {
 
     bench_group.finish();
 }
-
-// fn mul_lsb_treepbs_with_multivalue_base(c: &mut Criterion) {
-//     let mut bench_group = c.benchmark_group("mul_lsb_treepbs_with_multivalue_base");
-//
-//     for (param_name, param) in SERVER_KEY_BENCH_PARAMS {
-//         let (cks, sks) = KEY_CACHE.get_from_param(param);
-//
-//         let mut treepbs_key = TreepbsKey::new_tree_key(&cks);
-//
-//         let mut rng = rand::thread_rng();
-//
-//         let modulus = cks.parameters.message_modulus.0 as u64;
-//
-//         let clear_0 = rng.gen::<u64>() % modulus;
-//         let clear_1 = rng.gen::<u64>() % modulus;
-//
-//         let ctxt_0 = cks.encrypt(clear_0);
-//         let ctxt_1 = cks.encrypt(clear_1);
-//
-//         let id = format!("ServerKey::mul_lsb_treepbs_with_multivalue_base::{}", param_name);
-//
-//         bench_group.bench_function(&id, |b| {
-//             b.iter(|| {
-//                 treepbs_key.mul_lsb_treepbs_with_multivalue_base(&sks, &ctxt_0, &ctxt_1);
-//             })
-//         });
-//     }
-//
-//     bench_group.finish();
-// }
 
 fn mul_lsb_treepbs_with_multivalue(c: &mut Criterion) {
     let mut bench_group = c.benchmark_group("mul_lsb_treepbs_with_multivalue");
@@ -191,73 +77,36 @@ fn mul_lsb_treepbs_with_multivalue(c: &mut Criterion) {
     bench_group.finish();
 }
 
-macro_rules! define_server_key_bench_fn (
-  ($server_key_method:ident) => {
-      fn $server_key_method(c: &mut Criterion) {
-          bench_server_key_binary_function(
-              c,
-              concat!("ServerKey::", stringify!($server_key_method)),
-              |server_key, lhs, rhs| {
-                server_key.$server_key_method(lhs, rhs);
-          })
-      }
-  }
-);
-
-macro_rules! define_server_key_scalar_bench_fn (
-  ($server_key_method:ident) => {
-      fn $server_key_method(c: &mut Criterion) {
-          bench_server_key_binary_scalar_function(
-              c,
-              concat!("ServerKey::", stringify!($server_key_method)),
-              |server_key, lhs, rhs| {
-                server_key.$server_key_method(lhs, rhs);
-          })
-      }
-  }
-);
-
-define_server_key_bench_fn!(unchecked_add);
-define_server_key_bench_fn!(unchecked_sub);
-define_server_key_bench_fn!(unchecked_mul_lsb);
-define_server_key_bench_fn!(unchecked_mul_msb);
-define_server_key_bench_fn!(smart_bitand);
-define_server_key_bench_fn!(smart_bitor);
-define_server_key_bench_fn!(smart_bitxor);
-define_server_key_bench_fn!(smart_add);
-define_server_key_bench_fn!(smart_sub);
-define_server_key_bench_fn!(smart_mul_lsb);
-define_server_key_bench_fn!(smart_mul_msb);
-
-define_server_key_scalar_bench_fn!(unchecked_scalar_add);
-define_server_key_scalar_bench_fn!(unchecked_scalar_mul);
+// macro_rules! define_server_key_bench_fn (
+//   ($server_key_method:ident) => {
+//       fn $server_key_method(c: &mut Criterion) {
+//           bench_server_key_binary_function(
+//               c,
+//               concat!("ServerKey::", stringify!($server_key_method)),
+//               |server_key, lhs, rhs| {
+//                 server_key.$server_key_method(lhs, rhs);
+//           })
+//       }
+//   }
+// );
+//
+// macro_rules! define_server_key_scalar_bench_fn (
+//   ($server_key_method:ident) => {
+//       fn $server_key_method(c: &mut Criterion) {
+//           bench_server_key_binary_scalar_function(
+//               c,
+//               concat!("ServerKey::", stringify!($server_key_method)),
+//               |server_key, lhs, rhs| {
+//                 server_key.$server_key_method(lhs, rhs);
+//           })
+//       }
+//   }
+// );
 
 criterion_group!(
     arithmetic_operation,
-    // unchecked_add,
-    // unchecked_sub,
-    // unchecked_mul_lsb,
-    // unchecked_mul_msb,
-    // smart_bitand,
-    // smart_bitor,
-    // smart_bitxor,
-    // smart_add,
-    // smart_sub,
-    // smart_mul_lsb,
-    // smart_mul_msb,
-    carry_extract,
-    // programmable_bootstrapping,
-    // mul_lsb_treepbs_with_multivalue,
-    // mul_lsb_treepbs_with_multivalue_base,
-    // multivalue_programmable_bootstrapping
-    //bench_two_block_pbs
-    //wopbs_v0_norm2_2,
+    programmable_bootstrapping,
+    mul_lsb_treepbs_with_multivalue,
 );
 
-criterion_group!(
-    arithmetic_scalar_operation,
-    unchecked_scalar_add,
-    unchecked_scalar_mul,
-);
-
-criterion_main!(arithmetic_operation, arithmetic_scalar_operation,);
+criterion_main!(arithmetic_operation,);

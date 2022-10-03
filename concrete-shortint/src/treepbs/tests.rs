@@ -130,7 +130,7 @@ fn shortint_message_and_carry_extract(param: Parameters) {
 
     let base = cks.parameters.message_modulus.0 as u64;
 
-    for _ in 0..NB_TEST {
+    for _ in 0..10 {
         let clear_0 = rng.gen::<u64>() % base;
 
         // encryption of an integer

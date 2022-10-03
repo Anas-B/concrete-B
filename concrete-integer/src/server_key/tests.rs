@@ -11,7 +11,7 @@ const NB_TEST: usize = 30;
 
 /// Smaller number of loop iteration within randomized test,
 /// meant for test where the function tested is more expensive
-const NB_TEST_SMALLER: usize = 10;
+const NB_TEST_SMALLER: usize = 3;
 const NB_CTXT: usize = 4;
 
 macro_rules! create_parametrized_test{
@@ -862,7 +862,7 @@ fn integer_two_block_pbs(param: Parameters) {
 
     let treepbs_key = TreepbsKey::new(&cks);
 
-    for _ in 0..NB_TEST {
+    // for _ in 0..NB_TEST_SMALLER {
         let clear_0 = rng.gen::<u64>() % modulus;
 
         // encryption of an integer
@@ -884,8 +884,9 @@ fn integer_two_block_pbs(param: Parameters) {
         //     res
         // );
         // assert
+        assert_eq!(0, 1);
         assert_eq!(res, clear);
-    }
+    // }
 }
 
 fn integer_three_block_pbs(param: Parameters) {
@@ -900,7 +901,7 @@ fn integer_three_block_pbs(param: Parameters) {
 
     let treepbs_key = TreepbsKey::new(&cks);
 
-    for _ in 0..NB_TEST {
+    for _ in 0..NB_TEST_SMALLER {
         let clear_0 = rng.gen::<u64>() % modulus;
 
         // encryption of an integer
